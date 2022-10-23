@@ -37,6 +37,9 @@ public class OrderService {
         if (orderRequestDto.getMenuNameList().size() != orderRequestDto.getCountList().size()) {
             return ResponseDto.fail(400, "Bad Request", "메뉴와 갯수가 일치하지 않습니다");
         }
+        if (orderRequestDto.getMenuNameList().isEmpty()) {
+            return ResponseDto.fail(400, "Bad Request", "비어있는 주문입니다");
+        }
         List<Menu> menuList = new ArrayList<>();
         for (String menuName : orderRequestDto.getMenuNameList()) {
             Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(orderRequestDto.getRestaurantUsername(), menuName).orElse(null);
