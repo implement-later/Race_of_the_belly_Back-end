@@ -1,5 +1,6 @@
 package com.project.delivery.entity;
 
+import com.project.delivery.dto.request.MenuRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,9 +18,15 @@ public class Menu {
     @Column(name = "MENU_NAME", nullable = false)
     private String menuName;
 
-    @Column(name = "PRICE", nullable = false)
+    @Column(nullable = false)
     private int price;
 
     @Column(name = "RESTAURANT", nullable = false)
     private String restaurantUsername;
+
+    public Menu(MenuRequestDto menuRequestDto, String restaurantUsername) {
+        this.menuName = menuRequestDto.getMenuName();
+        this.price = menuRequestDto.getPrice();
+        this.restaurantUsername = restaurantUsername;
+    }
 }
