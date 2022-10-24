@@ -1,6 +1,6 @@
 #FileLock
-#Mon Oct 24 18:01:40 KST 2022
-server=192.168.26.222\:63837
+#Mon Oct 24 05:17:12 UTC 2022
 hostName=DESKTOP-OGU9LI2
+id=184083f10f9f2b03d14d52b9fc6dfd376d8f646111c
 method=file
-id=1840939db359e13725f1ef017dec77756bee60d5ed5
+server=172.30.1.1\:59825
