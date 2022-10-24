@@ -11,7 +11,6 @@ public class OrderRequestDto {
 
     private String memberUsername;
     private String restaurantUsername;
-    private List<String> menuNameList;
-    private List<Integer> countList;
+    private List<OrderDetailsRequestDto> orderDetailsList;
 
 }

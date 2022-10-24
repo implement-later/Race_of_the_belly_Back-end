@@ -1,6 +1,7 @@
 package com.project.delivery.entity;
 
-import com.project.delivery.dto.request.OrderRequestDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +10,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderFood {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,25 +27,33 @@ public class OrderFood {
     private Restaurant restaurant;
 
     @ElementCollection
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     private List<String> menuNameList;
-
-    @ElementCollection
-    @Column(nullable = false)
-    private List<Integer> priceList;
 
     @ElementCollection
     @Column(nullable = false)
     private List<Integer> countList;
 
-    public OrderFood(Member member, Restaurant restaurant, List<Integer> priceList, OrderRequestDto orderRequestDto) {
-        this.member = member;
-        this.restaurant = restaurant;
-        this.menuNameList = orderRequestDto.getMenuNameList();
-        this.priceList = priceList;
-        this.countList = orderRequestDto.getCountList();
+    @Column(nullable = false)
+    private Long totalPrice;
 
-        System.out.println(String.format("Id : %d", this.id));
+//    @ElementCollection
+//    @Column(nullable = false)
+//    private List<String> menuNameList;
+//
+//    @ElementCollection
+//    @Column(nullable = false)
+//    private List<Integer> priceList;
+//
+//    @ElementCollection
+//    @Column(nullable = false)
+//    private List<Integer> countList;
+
+    @Column(nullable = false)
+    private boolean accept;
+
+    public void acceptOrder() {
+        this.accept = true;
     }
 
     // for debugging
