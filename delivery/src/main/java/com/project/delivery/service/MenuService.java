@@ -4,6 +4,7 @@ import com.project.delivery.dto.request.MenuRequestDto;
 import com.project.delivery.dto.response.MemberResponseDto;
 import com.project.delivery.dto.response.MenuResponseDto;
 import com.project.delivery.dto.response.ResponseDto;
+import com.project.delivery.entity.Authority;
 import com.project.delivery.entity.Member;
 import com.project.delivery.entity.Menu;
 import com.project.delivery.entity.Restaurant;
@@ -31,17 +32,11 @@ public class MenuService {
         menuRepository.save(menu);
         return ResponseDto.success(new MenuResponseDto(menu));
     }
-    public ResponseDto<?> getMenuList(Long restaurantId, MemberDetailsImpl memberDetails) {
+
+    public ResponseDto<?> getMenuList(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElse(null);
         if (restaurant == null) {
             return ResponseDto.fail(404, "Not Found", "요청한 식당이 없습니다");
-        }
-
-        Member member = memberDetails.getMember();
-        Restaurant restaurantRequested = memberDetails.getRestaurant();
-
-        if (member == null && restaurantRequested == null) {
-            return ResponseDto.fail(403, "Forbidden Request", "로그인 필요합니다");
         }
 
         List<MenuResponseDto> menuList = new ArrayList<>();
@@ -51,5 +46,44 @@ public class MenuService {
         }
 
         return ResponseDto.success(menuList);
+    }
+
+    public ResponseDto<?> updateMenu(Long menuId, MenuRequestDto menuRequestDto, MemberDetailsImpl memberDetails) {
+        // 식당이 본인 식당 메뉴만 수정 가능
+        Restaurant restaurant = memberDetails.getRestaurant();
+        if (restaurant == null) {
+            return ResponseDto.fail(403, "Forbidden Request", "식당이 아닙니다");
+        }
+
+        Menu menu = menuRepository.findById(menuId).orElse(null);
+        if (menu == null) {
+            return ResponseDto.fail(404, "Not Found", "수정하려는 메뉴가 없습니다");
+        }
+        if (menu.getRestaurantUsername() != restaurant.getUsername()) {
+            return ResponseDto.fail(403, "Forbidden Request", "본인 식당 메뉴가 아닙니다");
+        }
+        menu.update(menuRequestDto);
+        menuRepository.save(menu);
+
+        return ResponseDto.success(new MenuResponseDto(menu));
+    }
+
+    public ResponseDto<?> deleteMenu(Long menuId, MemberDetailsImpl memberDetails) {
+        // 식당이 본인 식당 메뉴만 삭제 가능
+        Restaurant restaurant = memberDetails.getRestaurant();
+        if (restaurant == null) {
+            return ResponseDto.fail(403, "Forbidden Request", "식당이 아닙니다");
+        }
+
+        Menu menu = menuRepository.findById(menuId).orElse(null);
+        if (menu == null) {
+            return ResponseDto.fail(404, "Not Found", "수정하려는 메뉴가 없습니다");
+        }
+        if (menu.getRestaurantUsername() != restaurant.getUsername()) {
+            return ResponseDto.fail(403, "Forbidden Request", "본인 식당 메뉴가 아닙니다");
+        }
+        menuRepository.delete(menu);
+
+        return ResponseDto.success(String.format("%s 를 성공적으로 삭제하였습니다", menu.getMenuName()));
     }
 }

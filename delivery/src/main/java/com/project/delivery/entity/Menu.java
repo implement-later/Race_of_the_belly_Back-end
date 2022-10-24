@@ -29,4 +29,8 @@ public class Menu {
         this.price = menuRequestDto.getPrice();
         this.restaurantUsername = restaurantUsername;
     }
+    public void update(MenuRequestDto menuRequestDto) {
+        this.menuName = menuRequestDto.getMenuName();
+        this.price = menuRequestDto.getPrice();
+    }
 }
