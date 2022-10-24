@@ -48,7 +48,7 @@ public class MemberService {
             }
             Restaurant restaurant = new Restaurant(memberRequestDto, passwordEncoder);
             restaurantRepository.save(restaurant);
-            return ResponseDto.success("회원가입 완성되었습니다");
+            return ResponseDto.success(new MemberResponseDto(restaurant));
         } else {
             // 손님 회원가입
             if (!memberRequestDto.getPassword().equals(memberRequestDto.getPasswordConfirm())) {

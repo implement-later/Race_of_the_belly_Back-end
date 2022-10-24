@@ -1,6 +1,8 @@
 package com.project.delivery.service;
 
+import com.project.delivery.dto.request.OrderDetailsRequestDto;
 import com.project.delivery.dto.request.OrderRequestDto;
+import com.project.delivery.dto.response.OrderDetailsResponseDto;
 import com.project.delivery.dto.response.OrderResponseDto;
 import com.project.delivery.dto.response.ResponseDto;
 import com.project.delivery.entity.Member;
@@ -25,6 +27,8 @@ public class OrderService {
     private final RestaurantRepository restaurantRepository;
     private final OrderRepository orderRepository;
 
+    // Order = SQL statement --> change to OrderFood.java
+
     public ResponseDto<?> createOrder(OrderRequestDto orderRequestDto, MemberDetailsImpl memberDetails) {
         Member member = memberDetails.getMember();
         if (member == null) {
@@ -34,34 +38,55 @@ public class OrderService {
         if (restaurant == null) {
             return ResponseDto.fail(404, "Not Found", "요청한 식당이 없습니다");
         }
-        if (orderRequestDto.getMenuNameList().size() != orderRequestDto.getCountList().size()) {
-            return ResponseDto.fail(400, "Bad Request", "메뉴와 갯수가 일치하지 않습니다");
-        }
-        if (orderRequestDto.getMenuNameList().isEmpty()) {
+        if (orderRequestDto.getOrderDetailsList().isEmpty()) {
             return ResponseDto.fail(400, "Bad Request", "비어있는 주문입니다");
         }
-        List<Integer> priceList = new ArrayList<>();
-        for (String menuName : orderRequestDto.getMenuNameList()) {
-            Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(orderRequestDto.getRestaurantUsername(), menuName).orElse(null);
+        List<String> menuNameList = new ArrayList<>();
+        List<Integer> countList = new ArrayList<>();
+        int totalPrice = 0;
+
+        // For response output
+        List<OrderDetailsResponseDto> orderDetailsResponseDtoList = new ArrayList<>();
+
+        for (OrderDetailsRequestDto orderDetailsRequestDto : orderRequestDto.getOrderDetailsList()) {
+            String menuName = orderDetailsRequestDto.getMenuName();
+            int count = orderDetailsRequestDto.getCount();
+
+            Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(restaurant.getUsername(), menuName).orElse(null);
+
             if (menu == null) {
-                return ResponseDto.fail(404, "Not Found", "요청한 메뉴가 없습니다");
+                return ResponseDto.fail(404, "Not Found", String.format("요청한 %s 가 메뉴에 없습니다", menuName));
             }
-            priceList.add(menu.getPrice());
+            if (count <= 0) {
+                return ResponseDto.fail(400, "Bad Request", "음식 주문 수량은 0보다 커야 됩니다");
+            }
+
+            orderDetailsResponseDtoList.add(new OrderDetailsResponseDto(menu.getId(), menu.getMenuName(), menu.getPrice(), count));
+
+            menuNameList.add(menuName);
+            countList.add(count);
+
+            totalPrice += menu.getPrice() * count;
         }
-//        Order order = Order.builder()
-//                .member(member)
-//                .restaurant(restaurant)
-//                .menuNameList(orderRequestDto.getMenuNameList())
-//                .priceList(priceList)
-//                .countList(orderRequestDto.getCountList())
-//                .build();
 
-        OrderFood orderFood = new OrderFood(member, restaurant, priceList, orderRequestDto);
-
-        System.out.println(orderFood);
+        OrderFood orderFood = OrderFood.builder()
+                .member(member)
+                .restaurant(restaurant)
+                .menuNameList(menuNameList)
+                .countList(countList)
+                .totalPrice(Long.valueOf((long) totalPrice))
+                .accept(false)
+                .build();
 
         orderRepository.save(orderFood);
-        return ResponseDto.success(new OrderResponseDto(orderFood));
+
+        return ResponseDto.success(OrderResponseDto.builder()
+                .orderId(orderFood.getId())
+                .memberUsername(member.getUsername())
+                .restaurantUsername(restaurant.getUsername())
+                .orderDetailsResponseDtoList(orderDetailsResponseDtoList)
+                .totalPrice(totalPrice)
+                .build());
     }
 
 }
