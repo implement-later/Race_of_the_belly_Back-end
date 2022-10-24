@@ -40,21 +40,25 @@ public class OrderService {
         if (orderRequestDto.getMenuNameList().isEmpty()) {
             return ResponseDto.fail(400, "Bad Request", "비어있는 주문입니다");
         }
-        List<Menu> menuList = new ArrayList<>();
+        List<Integer> priceList = new ArrayList<>();
         for (String menuName : orderRequestDto.getMenuNameList()) {
             Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(orderRequestDto.getRestaurantUsername(), menuName).orElse(null);
             if (menu == null) {
                 return ResponseDto.fail(404, "Not Found", "요청한 메뉴가 없습니다");
             }
-            menuList.add(menu);
-
+            priceList.add(menu.getPrice());
         }
-        OrderFood orderFood = OrderFood.builder()
-                .member(member)
-                .restaurant(restaurant)
-                .menuList(menuList)
-                .countList(orderRequestDto.getCountList())
-                .build();
+//        Order order = Order.builder()
+//                .member(member)
+//                .restaurant(restaurant)
+//                .menuNameList(orderRequestDto.getMenuNameList())
+//                .priceList(priceList)
+//                .countList(orderRequestDto.getCountList())
+//                .build();
+
+        OrderFood orderFood = new OrderFood(member, restaurant, priceList, orderRequestDto);
+
+        System.out.println(orderFood);
 
         orderRepository.save(orderFood);
         return ResponseDto.success(new OrderResponseDto(orderFood));

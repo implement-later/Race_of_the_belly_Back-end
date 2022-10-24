@@ -19,8 +19,11 @@ public class MenuController {
         return menuService.createMenu(menuRequestDto, memberDetails);
     }
 
-    @GetMapping("/{restaurantId}")
-    public ResponseDto<?> getMenuList(@PathVariable Long restaurantId, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
-        return menuService.getMenuList(restaurantId, memberDetails);
+    @GetMapping("/restaurant/{restaurantId}")
+    public ResponseDto<?> getMenuList(@PathVariable Long restaurantId) {
+        return menuService.getMenuList(restaurantId);
     }
+
+//    @PutMapping("/{menuId}")
+//    public ResponseDto<?> updateMenu
 }
