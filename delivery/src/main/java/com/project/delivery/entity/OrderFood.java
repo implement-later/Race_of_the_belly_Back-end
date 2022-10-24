@@ -1,7 +1,6 @@
 package com.project.delivery.entity;
 
 
-import com.project.delivery.dto.request.OrderRequestDto;
 import com.project.delivery.util.TimeStamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Order extends TimeStamped {
+public class OrderFood extends TimeStamped {
 // TODO: jpa column name
 
     @Id

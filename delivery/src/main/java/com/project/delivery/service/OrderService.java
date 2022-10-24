@@ -5,7 +5,7 @@ import com.project.delivery.dto.response.OrderResponseDto;
 import com.project.delivery.dto.response.ResponseDto;
 import com.project.delivery.entity.Member;
 import com.project.delivery.entity.Menu;
-import com.project.delivery.entity.Order;
+import com.project.delivery.entity.OrderFood;
 import com.project.delivery.entity.Restaurant;
 import com.project.delivery.repository.MemberRepository;
 import com.project.delivery.repository.MenuRepository;
@@ -49,15 +49,15 @@ public class OrderService {
             menuList.add(menu);
 
         }
-        Order order = Order.builder()
+        OrderFood orderFood = OrderFood.builder()
                 .member(member)
                 .restaurant(restaurant)
                 .menuList(menuList)
                 .countList(orderRequestDto.getCountList())
                 .build();
 
-        orderRepository.save(order);
-        return ResponseDto.success(new OrderResponseDto(order));
+        orderRepository.save(orderFood);
+        return ResponseDto.success(new OrderResponseDto(orderFood));
     }
 
 }
