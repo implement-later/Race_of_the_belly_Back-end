@@ -113,8 +113,8 @@ public class OrderService {
         }
         return ResponseDto.success(OrderResponseDto.builder()
                 .orderId(orderFood.getId())
-                .memberUsername(member.getUsername())
-                .restaurantUsername(restaurant.getUsername())
+                .memberUsername(orderFood.getMember().getUsername())
+                .restaurantUsername(orderFood.getRestaurant().getUsername())
                 .orderDetailsResponseDtoList(orderDetailsResponseDtoList)
                 .totalPrice(orderFood.getTotalPrice())
                 .accepted(orderFood.isAccepted())
