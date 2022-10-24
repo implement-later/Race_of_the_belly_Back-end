@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Getter
+
 public class MemberDetailsImpl implements UserDetails {
 
     private final Member member;
@@ -31,7 +31,7 @@ public class MemberDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Authority authority = member.getAuthority();
+        Authority authority = restaurant == null? member.getAuthority() : restaurant.getAuthority();
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority.toString());
 
@@ -43,12 +43,15 @@ public class MemberDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        if (restaurant == null)
+            return member.getPassword();
+        else
+            return restaurant.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getUsername();
+        return restaurant == null ? member.getUsername() : restaurant.getUsername();
     }
 
     @Override
@@ -69,5 +72,21 @@ public class MemberDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Member getMember(){
+       try {
+           return this.member;
+       } catch (NullPointerException e){
+           return null;
+       }
+    }
+
+    public Restaurant getRestaurant(){
+        try {
+            return this.restaurant;
+        } catch (NullPointerException e){
+            return null;
+        }
     }
 }
