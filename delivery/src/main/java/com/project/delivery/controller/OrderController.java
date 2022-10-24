@@ -21,9 +21,10 @@ public class OrderController {
         return orderService.createOrder(orderRequestDto, memberDetails);
     }
 
-
-   // @GetMapping("/{orderId}")
-
+    @GetMapping("/{orderId}")
+    public ResponseDto<?> getOrder(@PathVariable Long orderId, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        return orderService.getOrder(orderId, memberDetails);
+    }
 
 
    // @PutMapping("/{orderId}")

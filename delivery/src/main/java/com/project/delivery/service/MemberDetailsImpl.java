@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Getter
+
 public class MemberDetailsImpl implements UserDetails {
 
     private final Member member;
@@ -72,5 +72,21 @@ public class MemberDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Member getMember(){
+       try {
+           return this.member;
+       } catch (NullPointerException e){
+           return null;
+       }
+    }
+
+    public Restaurant getRestaurant(){
+        try {
+            return this.restaurant;
+        } catch (NullPointerException e){
+            return null;
+        }
     }
 }

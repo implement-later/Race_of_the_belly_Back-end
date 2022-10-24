@@ -1,7 +1,5 @@
 package com.project.delivery.entity;
 
-
-import com.project.delivery.util.TimeStamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,37 +10,55 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class OrderFood extends TimeStamped {
-// TODO: jpa column name
-
+public class OrderFood {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "MEMBER_ID", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RESTAURANT_ID")
+    @JoinColumn(name = "RESTAURANT_ID", nullable = false)
     private Restaurant restaurant;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @Column(nullable = false)
-    private List<Menu> menuList;
+    @ElementCollection
+    @JoinColumn(nullable = false)
+    private List<String> menuNameList;
 
     @ElementCollection
     @Column(nullable = false)
     private List<Integer> countList;
 
+    @Column(nullable = false)
+    private Long totalPrice;
 
+//    @ElementCollection
+//    @Column(nullable = false)
+//    private List<String> menuNameList;
+//
+//    @ElementCollection
+//    @Column(nullable = false)
+//    private List<Integer> priceList;
+//
+//    @ElementCollection
+//    @Column(nullable = false)
+//    private List<Integer> countList;
 
+    @Column(nullable = false)
+    private boolean accepted;
 
+    public void acceptOrder() {
+        this.accepted = true;
+    }
 
-
+    // for debugging
+    @Override
+    public String toString() {
+        return String.format("%d %s %s", this.id, this.restaurant.getUsername(), this.member.getUsername());
+    }
 }
