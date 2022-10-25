@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class RestaurantResponseDto {
 
-    private Long restaurantId
+    private Long restaurantId;
     private String name;
 
     // TODO: Thumbnail Image  
