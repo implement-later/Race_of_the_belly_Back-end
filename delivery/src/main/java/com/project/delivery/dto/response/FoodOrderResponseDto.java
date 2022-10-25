@@ -9,12 +9,14 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-public class OrderResponseDto {
+public class FoodOrderResponseDto {
 
     private Long orderId;
     private String memberUsername;
     private String restaurantUsername;
-    private List<OrderDetailsResponseDto> orderDetailsResponseDtoList;
+    private List<FoodOrderDetailsResponseDto> foodOrderDetailsResponseDtoList;
+
     private int totalPrice;
+    private boolean accepted;
 
 }

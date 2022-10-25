@@ -19,11 +19,19 @@ public class MenuController {
         return menuService.createMenu(menuRequestDto, memberDetails);
     }
 
-    @GetMapping("/restaurant/{restaurantId}")
-    public ResponseDto<?> getMenuList(@PathVariable Long restaurantId) {
-        return menuService.getMenuList(restaurantId);
+    @GetMapping("/{menuId}")
+    public ResponseDto<?> getMenu(@PathVariable Long menuId, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+        return menuService.getMenu(menuId, memberDetails);
     }
 
-//    @PutMapping("/{menuId}")
-//    public ResponseDto<?> updateMenu
+    @PutMapping("/{menuId}")
+    public ResponseDto<?> updateMenu(@PathVariable Long menuId, @RequestBody MenuRequestDto menuRequestDto, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+        return menuService.updateMenu(menuId, menuRequestDto, memberDetails);
+    }
+
+    @DeleteMapping("/{menuId}")
+    public ResponseDto<?> deleteMenu(@PathVariable Long menuId, @AuthenticationPrincipal MemberDetailsImpl memberDetails) {
+        return menuService.deleteMenu(menuId, memberDetails);
+    }
+
 }

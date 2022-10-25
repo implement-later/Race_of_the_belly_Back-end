@@ -17,7 +17,7 @@ public class Restaurant extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -25,8 +25,6 @@ public class Restaurant extends TimeStamped {
 
     @Column(nullable = false)
     private String password;
-
-    private Authority authority = Authority.ROLE_RESTAURANT;
 
     public Restaurant(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.name = requestDto.getName();

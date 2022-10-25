@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member extends TimeStamped {
+public class Customer extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,9 +26,7 @@ public class Member extends TimeStamped {
     @Column(nullable = false)
     private String password;
 
-    private Authority authority = Authority.ROLE_CUSTOMER;
-
-    public Member(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
+    public Customer(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.name = requestDto.getName();
         this.username = requestDto.getUsername();
         this.password = passwordEncoder.encode(requestDto.getPassword());

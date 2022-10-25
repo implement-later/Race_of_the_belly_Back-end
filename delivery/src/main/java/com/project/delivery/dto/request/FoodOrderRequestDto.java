@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class OrderRequestDto {
+public class FoodOrderRequestDto {
 
     private String memberUsername;
     private String restaurantUsername;
-    private List<OrderDetailsRequestDto> orderDetailsList;
+    private List<FoodOrderDetailsRequestDto> orderDetailsList;
 
 }

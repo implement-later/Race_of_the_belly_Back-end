@@ -1,9 +1,9 @@
 package com.project.delivery.security;
 
 import com.project.delivery.dto.TokenDto;
-import com.project.delivery.entity.Member;
+import com.project.delivery.entity.Customer;
 import com.project.delivery.entity.Restaurant;
-import com.project.delivery.repository.MemberRepository;
+import com.project.delivery.repository.CustomerRepository;
 import com.project.delivery.repository.RestaurantRepository;
 import com.project.delivery.service.MemberDetailsImpl;
 import io.jsonwebtoken.*;
@@ -33,15 +33,15 @@ public class TokenProvider {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
 
-    private final MemberRepository memberRepository;
+    private final CustomerRepository customerRepository;
 
     private final RestaurantRepository restaurantRepository;
 
     private final Key key;
 
     @Autowired
-    public TokenProvider(@Value("${jwtSecret}") String secretKey, MemberRepository memberRepository, RestaurantRepository restaurantRepository) {
-        this.memberRepository = memberRepository;
+    public TokenProvider(@Value("${jwtSecret}") String secretKey, CustomerRepository customerRepository, RestaurantRepository restaurantRepository) {
+        this.customerRepository = customerRepository;
         this.restaurantRepository = restaurantRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -93,16 +93,16 @@ public class TokenProvider {
 //                        .collect(Collectors.toList());
 
         String username = claims.getSubject();
-        Member member = memberRepository.findByUsername( username ).orElse(null);
+        Customer customer = customerRepository.findByUsername( username ).orElse(null);
         Restaurant restaurant = restaurantRepository.findByUsername(username).orElse(null);
         MemberDetailsImpl memberDetails;
 
-        if (member == null && restaurant == null) {
+        if (customer == null && restaurant == null) {
             throw new UsernameNotFoundException(String.format("Username %s is not found", username));
-        } else if (member == null) {
+        } else if (customer == null) {
             memberDetails = new MemberDetailsImpl(restaurant);
         } else {
-            memberDetails = new MemberDetailsImpl(member);
+            memberDetails = new MemberDetailsImpl(customer);
         }
         return new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
         // UserDetails 객체를 만들어서 Authentication 리턴

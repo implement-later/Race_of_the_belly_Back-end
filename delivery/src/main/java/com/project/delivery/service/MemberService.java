@@ -4,11 +4,11 @@ import com.project.delivery.dto.TokenDto;
 import com.project.delivery.dto.request.TokenRequestDto;
 import com.project.delivery.dto.response.MemberResponseDto;
 import com.project.delivery.dto.response.ResponseDto;
-import com.project.delivery.entity.Member;
+import com.project.delivery.entity.Customer;
 import com.project.delivery.entity.RefreshToken;
 import com.project.delivery.dto.request.MemberRequestDto;
 import com.project.delivery.entity.Restaurant;
-import com.project.delivery.repository.MemberRepository;
+import com.project.delivery.repository.CustomerRepository;
 import com.project.delivery.repository.RefreshTokenRepository;
 import com.project.delivery.repository.RestaurantRepository;
 import com.project.delivery.security.JwtFilter;
@@ -27,7 +27,7 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final MemberRepository memberRepository;
+    private final CustomerRepository customerRepository;
     private final RestaurantRepository restaurantRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProvider tokenProvider;
@@ -36,31 +36,25 @@ public class MemberService {
     @Transactional
     public ResponseDto<?> signup(MemberRequestDto memberRequestDto) {
         if (restaurantRepository.existsByUsername(memberRequestDto.getUsername()) ||
-                memberRepository.existsByUsername(memberRequestDto.getUsername())) {
+                customerRepository.existsByUsername(memberRequestDto.getUsername())) {
             // 식당/손님 유저네임 unique
             return ResponseDto.fail(400, "Bad Request", "중복된 아이디 입니다");
         }
         if (memberRequestDto.isRestaurant()) {
             // 식당 회원가입
-
-            if (!memberRequestDto.getPassword().equals(memberRequestDto.getPasswordConfirm())) {
-                return ResponseDto.fail(400, "Bad Request", "패스워드가 일치하지 않습니다");
-            }
             Restaurant restaurant = new Restaurant(memberRequestDto, passwordEncoder);
             restaurantRepository.save(restaurant);
             return ResponseDto.success(new MemberResponseDto(restaurant));
         } else {
             // 손님 회원가입
-            if (!memberRequestDto.getPassword().equals(memberRequestDto.getPasswordConfirm())) {
-                return ResponseDto.fail(400, "Bad Request", "패스워드가 일치하지 않습니다");
-            }
-            Member member = new Member(memberRequestDto, passwordEncoder);
-            memberRepository.save(member);
-            return ResponseDto.success(new MemberResponseDto(member));
+            Customer customer = new Customer(memberRequestDto, passwordEncoder);
+            customerRepository.save(customer);
+            return ResponseDto.success(new MemberResponseDto(customer));
         }
     }
     @Transactional
     public ResponseDto<?> login(MemberRequestDto memberRequestDto, HttpServletResponse response) {
+        // TODO: return ResponseDto.fail for invalid login (currently exception is thrown)
 
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
@@ -82,16 +76,16 @@ public class MemberService {
             memberResponseDto = new MemberResponseDto(restaurant);
         } else {
             // 손님 로그인 처리
-            Member member = memberRepository.findByUsername(memberRequestDto.getUsername()).orElse(null);
+            Customer customer = customerRepository.findByUsername(memberRequestDto.getUsername()).orElse(null);
 
-            if (member == null) {
+            if (customer == null) {
                 // 해당 username 없음
                 return ResponseDto.fail(404, "Not Found", "사용자 정보를 찾을 수 없습니다.");
             }
-            if(!passwordEncoder.matches(memberRequestDto.getPassword(), member.getPassword())) {
+            if(!passwordEncoder.matches(memberRequestDto.getPassword(), customer.getPassword())) {
                 return ResponseDto.fail(400, "Bad Request", "패스워드가 일치하지 않습니다.");
             }
-            memberResponseDto = new MemberResponseDto(member);
+            memberResponseDto = new MemberResponseDto(customer);
         }
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
