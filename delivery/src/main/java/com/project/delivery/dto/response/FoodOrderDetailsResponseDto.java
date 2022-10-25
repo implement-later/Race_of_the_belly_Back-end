@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class OrderDetailsResponseDto {
+public class FoodOrderDetailsResponseDto {
     private Long menuId;
     private String menuName;
     private int menuPrice;

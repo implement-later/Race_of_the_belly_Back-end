@@ -1,6 +1,6 @@
 package com.project.delivery.dto.response;
 
-import com.project.delivery.entity.Member;
+import com.project.delivery.entity.Customer;
 import com.project.delivery.entity.Restaurant;
 import lombok.Getter;
 
@@ -11,9 +11,9 @@ public class MemberResponseDto {
     private String username;
     private String userType;
 
-    public MemberResponseDto(Member member) {
-        this.name = member.getName();
-        this.username = member.getUsername();
+    public MemberResponseDto(Customer customer) {
+        this.name = customer.getName();
+        this.username = customer.getUsername();
         this.userType = "Customer";
     }
 

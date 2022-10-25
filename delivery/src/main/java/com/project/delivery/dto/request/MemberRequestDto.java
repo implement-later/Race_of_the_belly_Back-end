@@ -19,8 +19,6 @@ public class MemberRequestDto {
     @Pattern(regexp= "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,20}$", message = "비밀번호는 최소 8자 이상, 20자 이하 알파벳 대소문자, 숫자(0-9), 특수문자로 구성됩니다.")
     private String password;
 
-    @NotBlank
-    private String passwordConfirm;
     private boolean isRestaurant;
 
     public UsernamePasswordAuthenticationToken toAuthentication() {

@@ -1,7 +1,7 @@
 package com.project.delivery.service;
 
 import com.project.delivery.entity.Authority;
-import com.project.delivery.entity.Member;
+import com.project.delivery.entity.Customer;
 import com.project.delivery.entity.Restaurant;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,27 +11,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
+@Getter
 public class MemberDetailsImpl implements UserDetails {
 
-    private final Member member;
+    private final Customer customer;
 
     private final Restaurant restaurant;
 
-    public MemberDetailsImpl(Member member) {
-        this.member = member;
+    private final boolean isCustomer;
+
+    public MemberDetailsImpl(Customer customer) {
+        this.customer = customer;
         this.restaurant = null;
+        this.isCustomer = true;
     }
 
     public MemberDetailsImpl(Restaurant restaurant) {
         this.restaurant = restaurant;
-        this.member = null;
+        this.customer = null;
+        this.isCustomer = false;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Authority authority = restaurant == null? member.getAuthority() : restaurant.getAuthority();
+        Authority authority = this.isCustomer ? Authority.ROLE_CUSTOMER : Authority.ROLE_RESTAURANT;
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority.toString());
 
@@ -44,14 +48,14 @@ public class MemberDetailsImpl implements UserDetails {
     @Override
     public String getPassword() {
         if (restaurant == null)
-            return member.getPassword();
+            return customer.getPassword();
         else
             return restaurant.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return restaurant == null ? member.getUsername() : restaurant.getUsername();
+        return restaurant == null ? customer.getUsername() : restaurant.getUsername();
     }
 
     @Override
@@ -74,19 +78,8 @@ public class MemberDetailsImpl implements UserDetails {
         return true;
     }
 
-    public Member getMember(){
-       try {
-           return this.member;
-       } catch (NullPointerException e){
-           return null;
-       }
+    public boolean isCustomer() {
+        return this.isCustomer;
     }
 
-    public Restaurant getRestaurant(){
-        try {
-            return this.restaurant;
-        } catch (NullPointerException e){
-            return null;
-        }
-    }
 }

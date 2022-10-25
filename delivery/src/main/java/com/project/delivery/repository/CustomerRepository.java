@@ -1,11 +1,11 @@
 package com.project.delivery.repository;
 
-import com.project.delivery.entity.Member;
+import com.project.delivery.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
     boolean existsByUsername(String username);
-    Optional<Member> findByUsername(String username);
+    Optional<Customer> findByUsername(String username);
 }

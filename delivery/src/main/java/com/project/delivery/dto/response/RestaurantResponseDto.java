@@ -6,13 +6,14 @@ import lombok.Getter;
 @Getter
 public class RestaurantResponseDto {
 
-    private Long id;
-    private String Restaurantname;
+    private Long restaurantId
+    private String name;
 
-
-
-    public RestaurantResponseDto(Restaurant restaurant){
-        this.id = restaurant.getId();
-        this.Restaurantname = restaurant.getUsername();
+    // TODO: Thumbnail Image  
+  
+  public RestaurantResponseDto(Restaurant restaurant) {
+    this.restaurantId = restaurant.getId();    
+    this.name = restaurant.getName();
+    
     }
 }
