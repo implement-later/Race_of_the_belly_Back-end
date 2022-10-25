@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
@@ -26,30 +25,29 @@ public class FoodOrder {
     @JoinColumn(name = "RESTAURANT_ID", nullable = false)
     private Restaurant restaurant;
 
-    // TODO: Set @ManyToMany using 중간 테이블
-    @ElementCollection
-    @JoinColumn(nullable = false)
-    private List<String> menuNameList;
-
-    @ElementCollection
-    @Column(nullable = false)
-    private List<Integer> countList;
-
     @Column(nullable = false)
     private int totalPrice;
 
     @Column(nullable = false)
     private boolean accepted;
 
+    public FoodOrder(Customer customer, Restaurant restaurant) {
+        this.customer = customer;
+        this.restaurant = restaurant;
+        this.totalPrice = 0;
+        this.accepted = false;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
     public void acceptOrder() {
         this.accepted = true;
     }
 
-    public void update(List<String> menuNameList, List<Integer> countList, int totalPrice) {
-        this.menuNameList = menuNameList;
-        this.countList = countList;
-        this.totalPrice = totalPrice;
-        this.accepted = false;
+    public void update() {
+        // TODO: implement
     }
 
     // for debugging

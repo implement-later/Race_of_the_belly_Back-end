@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,6 +24,10 @@ public class Menu {
 
     @Column(name = "RESTAURANT", nullable = false)
     private String restaurantUsername;
+
+    // for N:M mapping with customer
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    private List<FoodOrderDetails> foodOrderDetailsList;
 
     public Menu(MenuRequestDto menuRequestDto, String restaurantUsername) {
         this.menuName = menuRequestDto.getMenuName();
