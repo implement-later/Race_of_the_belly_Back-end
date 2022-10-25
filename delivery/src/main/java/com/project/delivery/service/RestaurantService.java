@@ -105,5 +105,6 @@ public class RestaurantService {
                 .totalPrice(foodOrder.getTotalPrice())
                 .accepted(foodOrder.isAccepted())
                 .build();
+
     }
 }
