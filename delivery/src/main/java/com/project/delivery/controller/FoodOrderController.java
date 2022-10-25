@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/order")
 public class FoodOrderController {
-
     private final FoodOrderService foodOrderService;
 
     @PostMapping("")
