@@ -105,7 +105,7 @@ public class RestaurantService {
         }
         return FoodOrderResponseDto.builder()
                 .orderId(foodOrder.getId())
-                .memberUsername(foodOrder.getCustomerUsername())
+                .customerUsername(foodOrder.getCustomerUsername())
                 .restaurantUsername(foodOrder.getRestaurantUsername())
                 .foodOrderDetailsResponseDtoList(foodOrderDetailsResponseDtoList)
                 .totalPrice(totalPrice)

@@ -6,10 +6,7 @@ import com.project.delivery.dto.response.FoodOrderDetailsResponseDto;
 import com.project.delivery.dto.response.FoodOrderResponseDto;
 import com.project.delivery.dto.response.ResponseDto;
 import com.project.delivery.entity.*;
-import com.project.delivery.repository.MenuRepository;
-import com.project.delivery.repository.FoodOrderRepository;
-import com.project.delivery.repository.RestaurantRepository;
-import com.project.delivery.repository.FoodOrderDetailsRepository;
+import com.project.delivery.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FoodOrderService {
+    private final CustomerRepository customerRepository;
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
     private final FoodOrderDetailsRepository foodOrderDetailsRepository;
@@ -42,7 +40,7 @@ public class FoodOrderService {
             return ResponseDto.fail(400, "Bad Request", "비어있는 주문입니다");
         }
 
-        FoodOrder foodOrder = new FoodOrder(customer, restaurant);
+        FoodOrder foodOrder = new FoodOrder(restaurant, customer);
 
         ResponseDto<?> updateResponse = updateFoodOrderDetails(foodOrder, foodOrderRequestDto);
 
@@ -66,13 +64,17 @@ public class FoodOrderService {
         if (memberDetails.isCustomer()) {
             // 해당 로그인이 손님일 경우
             Customer customer = memberDetails.getCustomer();
-            if (! foodOrder.getCustomer().getId().equals(customer.getId())) {
+            Customer foodOrderCustomer = customerRepository.findByUsername(foodOrder.getCustomerUsername()).orElse(null);
+
+            if (! foodOrderCustomer.getId().equals(customer.getId())) {
                 return ResponseDto.fail(403, "Forbidden Request", "주문한 손님이 아닙니다");
             }
         } else {
             // 해당 로그인이 식당일 경우
             Restaurant restaurant = memberDetails.getRestaurant();
-            if (! foodOrder.getRestaurant().getId().equals(restaurant.getId())) {
+            Restaurant foodOrderRestaurant = restaurantRepository.findByUsername(foodOrder.getRestaurantUsername()).orElse(null);
+
+            if (! foodOrderRestaurant.getId().equals(restaurant.getId())) {
                 return ResponseDto.fail(403, "Forbidden Request", "주문받은 식당이 아닙니다");
             }
         }
@@ -92,7 +94,9 @@ public class FoodOrderService {
             return ResponseDto.fail(403, "Forbidden Request", "현재 로그인이 식당이 아닙니다");
         }
         Restaurant restaurant = memberDetails.getRestaurant();
-        if (! foodOrder.getRestaurant().getId().equals(restaurant.getId())) {
+        Restaurant foodOrderRestaurant = restaurantRepository.findByUsername(foodOrder.getRestaurantUsername()).orElse(null);
+
+        if (! foodOrderRestaurant.getId().equals(restaurant.getId())) {
             return ResponseDto.fail(403, "Forbidden Request", "주문받은 식당이 아닙니다");
         }
 
@@ -116,7 +120,9 @@ public class FoodOrderService {
             return ResponseDto.fail(403, "Forbidden Request", "현재 로그인이 손님이 아닙니다");
         }
         Customer customer = memberDetails.getCustomer();
-        if (! foodOrder.getCustomer().getId().equals(customer.getId())) {
+        Customer foodOrderCustomer = customerRepository.findByUsername(foodOrder.getCustomerUsername()).orElse(null);
+
+        if (! foodOrderCustomer.getId().equals(customer.getId())) {
             return ResponseDto.fail(403, "Forbidden Request", "주문한 손님이 아닙니다");
         }
         if (foodOrder.isAccepted()) {
@@ -151,7 +157,10 @@ public class FoodOrderService {
         }
 
         if (! memberDetails.isCustomer()) {
-            if (! memberDetails.getRestaurant().getUsername().equals(foodOrder.getRestaurant().getUsername())) {
+            Restaurant restaurant = memberDetails.getRestaurant();
+            Restaurant foodOrderRestaurant = restaurantRepository.findByUsername(foodOrder.getRestaurantUsername()).orElse(null);
+
+            if (! restaurant.getUsername().equals(foodOrderRestaurant.getUsername())) {
                 return ResponseDto.fail(403, "Forbidden Request", "해당 주문을 받은 식당이 아닙니다");
             }
             if (foodOrder.isAccepted()) {
@@ -159,7 +168,9 @@ public class FoodOrderService {
             }
         } else if (memberDetails.isCustomer()) {
             Customer customer = memberDetails.getCustomer();
-            if (!customer.getId().equals(foodOrder.getCustomer().getId())) {
+            Customer foodOrderCustomer = customerRepository.findByUsername(foodOrder.getCustomerUsername()).orElse(null);
+
+            if (! customer.getId().equals(foodOrderCustomer.getId())) {
                 return ResponseDto.fail(403, "Forbidden Request", "주문을 요청한 손님만 삭제 요청 가능합니다");
             }
             // 주문요청한 손님이 맞을경우, 주문 수락 전에만 삭제 (취소) 가능
@@ -184,7 +195,9 @@ public class FoodOrderService {
             return ResponseDto.fail(404, "Not Found", "해당 주문 요청이 없습니다");
         }
 
-        if (! memberDetails.isCustomer() && ! memberDetails.getRestaurant().getUsername().equals(foodOrder.getRestaurant().getUsername())) {
+        Restaurant foodOrderRestaurant = restaurantRepository.findByUsername(foodOrder.getRestaurantUsername()).orElse(null);
+
+        if (! memberDetails.isCustomer() && ! memberDetails.getRestaurant().getUsername().equals(foodOrderRestaurant.getUsername())) {
             return ResponseDto.fail(403, "Forbidden Request", "해당 주문을 받은 식당이 아닙니다");
         } else if (memberDetails.isCustomer()) {
             return ResponseDto.fail(403, "Forbidden Request", "손님은 주문 완료하기를 실행할수 없습니다");
@@ -201,16 +214,22 @@ public class FoodOrderService {
         // REQUIREMENT: orderFood MUST be a valid order
 
         List<FoodOrderDetailsResponseDto> foodOrderDetailsResponseDtoList = new ArrayList<>();
+        int totalPrice = 0;
 
         for (FoodOrderDetails foodOrderDetails : foodOrderDetailsRepository.findByFoodOrder(foodOrder)) {
-            foodOrderDetailsResponseDtoList.add(new FoodOrderDetailsResponseDto(foodOrderDetails));
+            String restaurantUsername = foodOrder.getRestaurantUsername();
+            String menuName = foodOrderDetails.getMenuName();
+            Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(restaurantUsername, menuName).orElse(null);
+
+            foodOrderDetailsResponseDtoList.add(new FoodOrderDetailsResponseDto(foodOrderDetails, menu));
+            totalPrice += foodOrderDetails.getPrice() * foodOrderDetails.getCount();
         }
         return FoodOrderResponseDto.builder()
                 .orderId(foodOrder.getId())
-                .memberUsername(foodOrder.getCustomer().getUsername())
-                .restaurantUsername(foodOrder.getRestaurant().getUsername())
+                .customerUsername(foodOrder.getCustomerUsername())
+                .restaurantUsername(foodOrder.getRestaurantUsername())
                 .foodOrderDetailsResponseDtoList(foodOrderDetailsResponseDtoList)
-                .totalPrice(foodOrder.getTotalPrice())
+                .totalPrice(totalPrice)
                 .accepted(foodOrder.isAccepted())
                 .build();
     }
@@ -224,23 +243,23 @@ public class FoodOrderService {
     }
 
     private ResponseDto<?> updateFoodOrderDetails(FoodOrder foodOrder, FoodOrderRequestDto foodOrderRequestDto) {
-        Customer customer = foodOrder.getCustomer();
-        Restaurant restaurant = foodOrder.getRestaurant();
+        Customer customer = customerRepository.findByUsername(foodOrder.getCustomerUsername()).orElse(null);
+
+        Restaurant restaurant = restaurantRepository.findByUsername(foodOrder.getRestaurantUsername()).orElse(null);
         int totalPrice = 0;
 
         for (FoodOrderDetailsRequestDto foodOrderDetailsRequestDto : foodOrderRequestDto.getOrderDetailsList()) {
-            Menu menu = menuRepository.findByRestaurantAndMenuName(restaurant, foodOrderDetailsRequestDto.getMenuName()).orElse(null);
+            Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(restaurant.getUsername(), foodOrderDetailsRequestDto.getMenuName()).orElse(null);
 
             if (menu == null) {
                 return ResponseDto.fail(404, "Not Found", "요청한 메뉴가 없습니다");
             }
-            FoodOrderDetails foodOrderDetails = new FoodOrderDetails(customer, restaurant, menu, foodOrder, foodOrderDetailsRequestDto.getCount());
+            FoodOrderDetails foodOrderDetails = new FoodOrderDetails(foodOrder, foodOrderDetailsRequestDto.getCount(), menu.getMenuName(), menu.getPrice());
 
             foodOrderDetailsRepository.save(foodOrderDetails);
 
             totalPrice += menu.getPrice() * foodOrderDetails.getCount();
         }
-        foodOrder.setTotalPrice(totalPrice);
 
         return ResponseDto.success("updated successfully");
     }
