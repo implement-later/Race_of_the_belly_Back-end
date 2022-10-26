@@ -17,30 +17,21 @@ public class FoodOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID", nullable = false)
-    private Customer customer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RESTAURANT_ID", nullable = false)
-    private Restaurant restaurant;
+    @Column(nullable = false)
+    private String restaurantUsername;
 
     @Column(nullable = false)
-    private int totalPrice;
+    private String customerUsername;
 
     @Column(nullable = false)
     private boolean accepted;
 
-    public FoodOrder(Customer customer, Restaurant restaurant) {
-        this.customer = customer;
-        this.restaurant = restaurant;
-        this.totalPrice = 0;
+    public FoodOrder(Restaurant restaurant, Customer customer) {
+        this.restaurantUsername = restaurant.getUsername();
+        this.customerUsername = customer.getUsername();
         this.accepted = false;
     }
 
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
-    }
 
     public void acceptOrder() {
         this.accepted = true;
@@ -48,11 +39,5 @@ public class FoodOrder {
 
     public void update() {
         // TODO: implement
-    }
-
-    // for debugging
-    @Override
-    public String toString() {
-        return String.format("%d %s %s", this.id, this.restaurant.getUsername(), this.customer.getUsername());
     }
 }

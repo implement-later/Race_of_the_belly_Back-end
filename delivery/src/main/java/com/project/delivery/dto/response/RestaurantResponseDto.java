@@ -8,12 +8,12 @@ public class RestaurantResponseDto {
 
     private Long restaurantId;
     private String name;
+    private String username;
 
     // TODO: Thumbnail Image  
-  
-  public RestaurantResponseDto(Restaurant restaurant) {
-    this.restaurantId = restaurant.getId();    
-    this.name = restaurant.getName();
-    
+    public RestaurantResponseDto(Restaurant restaurant) {
+        this.restaurantId = restaurant.getId();
+        this.name = restaurant.getName();
+        this.username = restaurant.getUsername();
     }
 }
