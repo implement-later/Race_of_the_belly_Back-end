@@ -24,7 +24,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnDefaultWebSecurity
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-public class SecurityConfig{
+public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -36,11 +36,11 @@ public class SecurityConfig{
 
     // h2 database 테스트가 원활하도록 관련 API 들은 전부 무시
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return  (web) -> web.ignoring()
-                .antMatchers("/h2-console/**", "/favicon.ico");
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return  (web) -> web.ignoring()
+//                .antMatchers("/h2-console/**", "/favicon.ico");
+//    }
 
     @Bean
     @Order(SecurityProperties.BASIC_AUTH_ORDER)
@@ -48,6 +48,7 @@ public class SecurityConfig{
         // TODO: change from throwing exception to returning ResponseDto.fail
         // CSRF 설정 Disable
         http.csrf().disable()
+                .cors().disable()
 
                 // exception handling 할 때 우리가 만든 클래스를 추가
                 .exceptionHandling()
