@@ -221,7 +221,7 @@ public class FoodOrderService {
             String menuName = foodOrderDetails.getMenuName();
             Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(restaurantUsername, menuName).orElse(null);
 
-            foodOrderDetailsResponseDtoList.add(new FoodOrderDetailsResponseDto(menu.getId(), foodOrderDetails));
+            foodOrderDetailsResponseDtoList.add(new FoodOrderDetailsResponseDto(foodOrderDetails, menu));
             totalPrice += foodOrderDetails.getPrice() * foodOrderDetails.getCount();
         }
         return FoodOrderResponseDto.builder()
