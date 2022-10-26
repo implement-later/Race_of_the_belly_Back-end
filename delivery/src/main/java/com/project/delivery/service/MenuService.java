@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 public class MenuService {
     private final MenuRepository menuRepository;
 
+
     @Transactional
     public ResponseDto<?> createMenu(MenuRequestDto menuRequestDto, MemberDetailsImpl memberDetails) {
         // 식당만 본인 식당에 메뉴 생성 요청 가능
