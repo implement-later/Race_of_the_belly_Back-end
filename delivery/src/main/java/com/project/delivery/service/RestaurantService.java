@@ -51,9 +51,10 @@ public class RestaurantService {
             return ResponseDto.fail(404, "Not Found", "요청한 식당이 없습니다");
         }
 
-        if (! memberDetails.isCustomer() && ! memberDetails.getRestaurant().getId().equals(restaurantId)) {
+        if (! memberDetails.isCustomer() ) {
+            if (! memberDetails.getRestaurant().getId().equals(restaurantId)){
             return ResponseDto.fail(403, "Forbidden Request", "해당 식당 리스트를 열람할 권한이 없습니다");
-        }
+        }}
 
         List<MenuResponseDto> menuList = new ArrayList<>();
 
@@ -80,7 +81,7 @@ public class RestaurantService {
             return ResponseDto.fail(403, "Forbidden Request", "해당 식당이 아닙니다");
         }
 
-        List<FoodOrder> orderList = foodOrderRepository.findByRestaurant(currentRestaurant);
+        List<FoodOrder> orderList = foodOrderRepository.findByRestaurantUsername(currentRestaurant.getUsername());
 
         List<FoodOrderResponseDto> fullOrderResponseList = new ArrayList<>();
 

@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface FoodOrderRepository extends JpaRepository<FoodOrder, Long> {
 
-    List<FoodOrder> findByRestaurant(Restaurant restaurant);
+    List<FoodOrder> findByRestaurantUsername(String restaurantUsername);
 }
