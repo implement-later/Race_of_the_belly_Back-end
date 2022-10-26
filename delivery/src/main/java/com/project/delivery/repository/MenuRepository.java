@@ -1,6 +1,7 @@
 package com.project.delivery.repository;
 
 import com.project.delivery.entity.Menu;
+import com.project.delivery.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -8,9 +9,9 @@ import java.util.Optional;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
-    Boolean existsByRestaurantUsernameAndMenuName(String restaurantUsername, String menuName);
+    Boolean existsByRestaurantAndMenuName(Restaurant restaurant, String menuName);
 
-    List<Menu> findByRestaurantUsername(String restaurantUsername);
+    List<Menu> findByRestaurant(Restaurant restaurant);
 
-    Optional<Menu> findByRestaurantUsernameAndMenuName(String restaurantUsername, String menuName);
+    Optional<Menu> findByRestaurantAndMenuName(Restaurant restaurant, String menuName);
 }

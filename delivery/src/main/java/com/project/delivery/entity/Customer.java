@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +26,10 @@ public class Customer extends TimeStamped {
 
     @Column(nullable = false)
     private String password;
+
+    // For N:M mapping with menu
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    List<FoodOrderDetails> foodOrderDetailsList;
 
     public Customer(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.name = requestDto.getName();
