@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class FoodOrderDetails {
 
     @Id
@@ -29,4 +28,10 @@ public class FoodOrderDetails {
     @Column(nullable = false)
     private int price;
 
+    public FoodOrderDetails(FoodOrder foodOrder, int count, String menuName, int price) {
+        this.foodOrder = foodOrder;
+        this.count = count;
+        this.menuName = menuName;
+        this.price = price;
+    }
 }
