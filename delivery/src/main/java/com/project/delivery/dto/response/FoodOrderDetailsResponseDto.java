@@ -12,10 +12,10 @@ public class FoodOrderDetailsResponseDto {
     private int menuPrice;
     private int menuCount;
 
-    public FoodOrderDetailsResponseDto(FoodOrderDetails foodOrderDetails) {
-        this.menuId = foodOrderDetails.getMenu().getId();
-        this.menuName = foodOrderDetails.getMenu().getMenuName();
-        this.menuPrice = foodOrderDetails.getMenu().getPrice();
+    public FoodOrderDetailsResponseDto(Long menuId, FoodOrderDetails foodOrderDetails) {
+        this.menuId = menuId;
+        this.menuName = foodOrderDetails.getMenuName();
+        this.menuPrice = foodOrderDetails.getPrice();
         this.menuCount = foodOrderDetails.getCount();
     }
 }

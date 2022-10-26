@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Getter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class FoodOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
