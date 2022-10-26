@@ -20,7 +20,7 @@ public class MemberResponseDto {
     }
 
     public MemberResponseDto(Restaurant restaurant) {
-        this.id = restarant.getId()
+        this.id = restarant.getId();
         this.name = restaurant.getName();
         this.username = restaurant.getUsername();
         this.userType = "Restaurant";
