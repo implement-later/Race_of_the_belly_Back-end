@@ -33,6 +33,7 @@ public class FoodOrderService {
         }
         Customer customer = memberDetails.getCustomer();
         Restaurant restaurant = restaurantRepository.findByUsername(foodOrderRequestDto.getRestaurantUsername()).orElse(null);
+
         if (restaurant == null) {
             return ResponseDto.fail(404, "Not Found", "요청한 식당이 없습니다");
         }
