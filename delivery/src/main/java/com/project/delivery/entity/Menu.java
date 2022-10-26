@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"MENU_NAME", "RESTAURANT"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"MENU_NAME", "RESTAURANT_ID"})})
 @NoArgsConstructor
 public class Menu {
     @Id
@@ -22,17 +22,18 @@ public class Menu {
     @Column(nullable = false)
     private int price;
 
-    @Column(name = "RESTAURANT", nullable = false)
-    private String restaurantUsername;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RESTAURANT_ID", nullable = false)
+    private Restaurant restaurant;
 
     // for N:M mapping with customer
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
     private List<FoodOrderDetails> foodOrderDetailsList;
 
-    public Menu(MenuRequestDto menuRequestDto, String restaurantUsername) {
+    public Menu(MenuRequestDto menuRequestDto, Restaurant restaurant) {
         this.menuName = menuRequestDto.getMenuName();
         this.price = menuRequestDto.getPrice();
-        this.restaurantUsername = restaurantUsername;
+        this.restaurant = restaurant;
     }
     public void update(MenuRequestDto menuRequestDto) {
         this.menuName = menuRequestDto.getMenuName();

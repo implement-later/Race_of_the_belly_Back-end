@@ -43,21 +43,12 @@ public class FoodOrderService {
         }
 
         FoodOrder foodOrder = new FoodOrder(customer, restaurant);
-        int totalPrice = 0;
 
-        for (FoodOrderDetailsRequestDto foodOrderDetailsRequestDto : foodOrderRequestDto.getOrderDetailsList()) {
-            Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(restaurant.getUsername(), foodOrderDetailsRequestDto.getMenuName()).orElse(null);
+        ResponseDto<?> updateResponse = updateFoodOrderDetails(foodOrder, foodOrderRequestDto);
 
-            if (menu == null) {
-                return ResponseDto.fail(404, "Not Found", "요청한 메뉴가 없습니다");
-            }
-            FoodOrderDetails foodOrderDetails = new FoodOrderDetails(customer, restaurant, menu, foodOrder, foodOrderDetailsRequestDto.getCount());
-
-            foodOrderDetailsRepository.save(foodOrderDetails);
-
-            totalPrice += menu.getPrice() * foodOrderDetails.getCount();
+        if (updateResponse.getCode() != 200) {
+            return updateResponse;
         }
-        foodOrder.setTotalPrice(totalPrice);
 
         foodOrderRepository.save(foodOrder);
 
@@ -132,20 +123,15 @@ public class FoodOrderService {
             return ResponseDto.fail(403, "Forbidden Request", "주문이 이미 수락된 상태입니다");
         }
 
-        // delete existing foodOrderDetails and fill with new ones
-
         List<FoodOrderDetails> foodOrderDetailsList = foodOrderDetailsRepository.findByFoodOrder(foodOrder);
 
-        Restaurant restaurant = foodOrder.getRestaurant();
+        // add new order details
+        ResponseDto<?> updateResponse = updateFoodOrderDetails(foodOrder, foodOrderRequestDto);
 
-        for (FoodOrderDetailsRequestDto foodOrderDetailsRequestDto : foodOrderRequestDto.getOrderDetailsList()) {
-            Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(restaurant.getUsername(), foodOrderDetailsRequestDto.getMenuName()).orElse(null);
-            if (menu == null) {
-                return ResponseDto.fail(404, "Not Found", "식당에 없는 메뉴입니다");
-            }
-            FoodOrderDetails foodOrderDetails = new FoodOrderDetails(customer, restaurant, menu, foodOrder, foodOrderDetailsRequestDto.getCount());
-            foodOrderDetailsRepository.save(foodOrderDetails);
+        if (updateResponse.getCode() != 200) {
+            return updateResponse;
         }
+
         // delete existing order
         for (FoodOrderDetails foodOrderDetails : foodOrderDetailsList) {
             foodOrderDetailsRepository.delete(foodOrderDetails);
@@ -210,7 +196,7 @@ public class FoodOrderService {
         return ResponseDto.success("주문이 완료 되었습니다!");
     }
 
-    @Transactional
+
     private FoodOrderResponseDto getOrderResponse(FoodOrder foodOrder) {
         // REQUIREMENT: orderFood MUST be a valid order
 
@@ -229,13 +215,34 @@ public class FoodOrderService {
                 .build();
     }
 
-    @Transactional
     private void deleteOrder(FoodOrder foodOrder) {
         for (FoodOrderDetails foodOrderDetails : foodOrderDetailsRepository.findByFoodOrder(foodOrder)) {
             foodOrderDetailsRepository.delete(foodOrderDetails);
         }
 
         foodOrderRepository.delete(foodOrder);
+    }
+
+    private ResponseDto<?> updateFoodOrderDetails(FoodOrder foodOrder, FoodOrderRequestDto foodOrderRequestDto) {
+        Customer customer = foodOrder.getCustomer();
+        Restaurant restaurant = foodOrder.getRestaurant();
+        int totalPrice = 0;
+
+        for (FoodOrderDetailsRequestDto foodOrderDetailsRequestDto : foodOrderRequestDto.getOrderDetailsList()) {
+            Menu menu = menuRepository.findByRestaurantAndMenuName(restaurant, foodOrderDetailsRequestDto.getMenuName()).orElse(null);
+
+            if (menu == null) {
+                return ResponseDto.fail(404, "Not Found", "요청한 메뉴가 없습니다");
+            }
+            FoodOrderDetails foodOrderDetails = new FoodOrderDetails(customer, restaurant, menu, foodOrder, foodOrderDetailsRequestDto.getCount());
+
+            foodOrderDetailsRepository.save(foodOrderDetails);
+
+            totalPrice += menu.getPrice() * foodOrderDetails.getCount();
+        }
+        foodOrder.setTotalPrice(totalPrice);
+
+        return ResponseDto.success("updated successfully");
     }
 }
 

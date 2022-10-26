@@ -57,7 +57,7 @@ public class RestaurantService {
 
         List<MenuResponseDto> menuList = new ArrayList<>();
 
-        for (Menu menu : menuRepository.findByRestaurantUsername(restaurant.getUsername())) {
+        for (Menu menu : menuRepository.findByRestaurant(restaurant)) {
             menuList.add(new MenuResponseDto(menu));
         }
 
