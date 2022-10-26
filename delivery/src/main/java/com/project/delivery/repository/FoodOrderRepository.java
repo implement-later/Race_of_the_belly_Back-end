@@ -1,7 +1,6 @@
 package com.project.delivery.repository;
 
 import com.project.delivery.entity.FoodOrder;
-import com.project.delivery.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

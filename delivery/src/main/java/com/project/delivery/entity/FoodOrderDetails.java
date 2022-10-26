@@ -15,7 +15,7 @@ public class FoodOrderDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "FoodOrder_ID", nullable = false)
     private FoodOrder foodOrder;
 
@@ -25,7 +25,7 @@ public class FoodOrderDetails {
     @Column(nullable = false)
     private String menuName;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private int price;
 
     public FoodOrderDetails(FoodOrder foodOrder, int count, String menuName, int price) {
