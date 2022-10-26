@@ -96,15 +96,19 @@ public class RestaurantService {
 
         List<FoodOrderDetailsResponseDto> foodOrderDetailsResponseDtoList = new ArrayList<>();
 
+        int totalPrice = 0;
+
         for (FoodOrderDetails foodOrderDetails : foodOrderDetailsRepository.findByFoodOrder(foodOrder)) {
-            foodOrderDetailsResponseDtoList.add(new FoodOrderDetailsResponseDto(foodOrderDetails));
+            Menu menu = menuRepository.findByRestaurantUsernameAndMenuName(foodOrder.getRestaurantUsername(), foodOrderDetails.getMenuName()).orElse(null);
+            foodOrderDetailsResponseDtoList.add(new FoodOrderDetailsResponseDto(foodOrderDetails, menu ));
+            totalPrice += foodOrderDetails.getPrice() * foodOrderDetails.getCount();
         }
         return FoodOrderResponseDto.builder()
                 .orderId(foodOrder.getId())
-                .memberUsername(foodOrder.getCustomer().getUsername())
-                .restaurantUsername(foodOrder.getRestaurant().getUsername())
+                .memberUsername(foodOrder.getCustomerUsername())
+                .restaurantUsername(foodOrder.getRestaurantUsername())
                 .foodOrderDetailsResponseDtoList(foodOrderDetailsResponseDtoList)
-                .totalPrice(foodOrder.getTotalPrice())
+                .totalPrice(totalPrice)
                 .accepted(foodOrder.isAccepted())
                 .build();
     }

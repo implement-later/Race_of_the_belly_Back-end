@@ -1,6 +1,7 @@
 package com.project.delivery.dto.response;
 
 import com.project.delivery.entity.FoodOrderDetails;
+import com.project.delivery.entity.Menu;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,10 +13,10 @@ public class FoodOrderDetailsResponseDto {
     private int menuPrice;
     private int menuCount;
 
-    public FoodOrderDetailsResponseDto(FoodOrderDetails foodOrderDetails) {
-        this.menuId = foodOrderDetails.getMenu().getId();
-        this.menuName = foodOrderDetails.getMenu().getMenuName();
-        this.menuPrice = foodOrderDetails.getMenu().getPrice();
+    public FoodOrderDetailsResponseDto(FoodOrderDetails foodOrderDetails, Menu menu) {
+        this.menuId = menu.getId();
+        this.menuName = foodOrderDetails.getMenuName();
+        this.menuPrice = foodOrderDetails.getPrice();
         this.menuCount = foodOrderDetails.getCount();
     }
 }

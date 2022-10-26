@@ -27,10 +27,6 @@ public class Restaurant extends TimeStamped {
     @Column(nullable = false)
     private String password;
 
-    // For N:M mapping with customer
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    List<FoodOrderDetails> foodOrderDetailsList;
-
     public Restaurant(MemberRequestDto requestDto, PasswordEncoder passwordEncoder) {
         this.name = requestDto.getName();
         this.username = requestDto.getUsername();

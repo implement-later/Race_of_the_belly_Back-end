@@ -26,10 +26,6 @@ public class Menu {
     @JoinColumn(name = "RESTAURANT_ID", nullable = false)
     private Restaurant restaurant;
 
-    // for N:M mapping with customer
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
-    private List<FoodOrderDetails> foodOrderDetailsList;
-
     public Menu(MenuRequestDto menuRequestDto, Restaurant restaurant) {
         this.menuName = menuRequestDto.getMenuName();
         this.price = menuRequestDto.getPrice();
