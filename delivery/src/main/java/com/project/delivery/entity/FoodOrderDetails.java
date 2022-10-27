@@ -25,7 +25,7 @@ public class FoodOrderDetails {
     @Column(nullable = false)
     private String menuName;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private int price;
 
     public FoodOrderDetails(FoodOrder foodOrder, int count, String menuName, int price) {
